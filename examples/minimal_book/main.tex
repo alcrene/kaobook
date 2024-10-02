@@ -1,8 +1,12 @@
 % Load the kaobook class
 \documentclass[
 	fontsize=10pt, % Base font size
-	twoside=false, % Use different layouts for even and odd pages (in particular, if twoside=true, the margin column will be always on the outside)
-	%open=any, % If twoside=true, uncomment this to force new chapters to start on any page, not only on right (odd) pages
+	twoside=false, % Whether to use different layouts for even and odd pages
+				   % twoside=true : blank pages may be inserted (so that new chapters always start on a right page) ; the margin column will be always on the *outside*
+				   % twoside=semi : blank pages may be inserted (so that new chapters always start on a right page) ; the margin column will be always on the *right*
+				   % twoside=false: blank pages are *not* inserted (chapters may start on either left or right page); the margin column will be always on the *right*
+				   % CAUTION: Kaobook does not fully support `twoside=semi` and will place header content outside the page. Only use this option if you are willing to also fix the header positions
+	%open=any, % If twoside=true or twoside=semi, uncomment this to force new chapters to start on any page, not only on right (odd) pages. A blank page may still be inserted before the first chapter
 	secnumdepth=1, % How deep to number headings. Defaults to 1 (sections)
 ]{kaobook}
 
@@ -90,7 +94,20 @@
 %----------------------------------------------------------------------------------------
 
 % Note that \maketitle outputs the pages before here
-\maketitle
+% Conditionals ensure the copyright page is printed even in one-sided printing. See
+%   https://tex.stackexchange.com/a/360791 : Conditional form
+%   https://tex.stackexchange.com/a/182916 : Values of @twoside, @semitwoside
+%   https://tex.stackexchange.com/a/468477 : Forcing semitwoside for the \maketitle call
+\makeatletter
+\if@twoside%
+	\maketitle
+\else%
+	\begingroup
+		\csname @twosidetrue\endcsname
+		\maketitle
+	\endgroup
+\fi%
+\makeatother
 
 %----------------------------------------------------------------------------------------
 %	PREFACE
@@ -136,7 +153,7 @@
 
 \chapter{First Chapter}
 
-\blindtext
+\Blindtext[7][2]
 
 \pagelayout{wide} % No margins
 \addpart{Title of the Part}
@@ -144,7 +161,7 @@
 
 \chapter{Second Chapter}
 
-\blindtext
+\Blindtext[7][2]
 
 \appendix % From here onwards, chapters are numbered with letters, as is the appendix convention
 
@@ -154,7 +171,7 @@
 
 \chapter{Some more blindtext}
 
-\blindtext
+\Blindtext[3][2]
 
 %----------------------------------------------------------------------------------------
 
